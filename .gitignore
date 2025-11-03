@@ -1,0 +1,40 @@
+# CMake 构建目录
+build/
+*/build/
+**/build/
+out/
+*/out/
+**/out/
+
+# CMake 生成的配置
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# CMake 预设文件
+CMakePresets.json
+CMakeUserPresets.json
+*/CMakePresets.json
+**/CMakePresets.json
+
+# 测试相关
+Testing/
+*/Testing/
+**/Testing/
+
+# 其他可能的构建输出
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+*.app
+
+# IDE 相关
+.vscode/
+.idea/
+*.swp
+*.swo
