@@ -1,0 +1,14 @@
+1
+ello
+INSERT h
+2
+hllo
+FORWARD 1
+INSERT e
+2
+hell
+FORWARD 10002
+INSERT o
+1
+hello
+REPLACE HELLO
