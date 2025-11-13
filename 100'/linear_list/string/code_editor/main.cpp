@@ -10,14 +10,13 @@
 //思路：翻译成string基本操作
 int main(){
     //预处理
-    //用什么结构存指令
     int n = 0;
     std::string s;
     std::cin >> n;
     //std::cin >> s;
     std::cin.ignore();
     std::getline(std::cin,s);
-    std::vector<std::pair<std::string,std::string>> commands;
+    std::vector<std::pair<std::string,std::string>> commands;//用pair存指令
     for(int i=0;i<n;i++){
         std::string com;
         std::string value;
@@ -29,14 +28,12 @@ int main(){
         std::string com = commands[i].first;
         std::string val = commands[i].second;
         if(com=="FORWARD"){//REVIEW 这种判断尤其要注意拼写 最好是复制粘贴
-            //min在哪个头文件？
             start = std::min((int)s.size(),start+std::stoi(val));//REVIEW1 min在头文件algorithm中 考虑到符号问题 必须使用同类型的整型
         }
         else if(com=="BACKWARD"){
             start = std::max(0,start-std::stoi(val));
         }
         else if(com=="SEARCH-FORWARD"){
-            //find 的pos具体是哪
             auto pos = s.find(val);
             if(pos != std::string::npos){//REVIEW2 npos在string作用域
                 start = pos;
@@ -49,7 +46,7 @@ int main(){
             }
         }
         else if(com=="INSERT"){
-            s.insert(start,val);//不需要迭代器？
+            s.insert(start,val);//REVIEW string的方法都不使用迭代器
             start +=val.size();
         }
         else if(com =="REPLACE"){
