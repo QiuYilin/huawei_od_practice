@@ -1,32 +1,73 @@
 #!/usr/bin/env python3
 """
-测试脚本 - 适应新的输入输出格式
+测试脚本 - AI处理器亲和性调度
+专门测试 main.cpp
 """
 
 import os
 import subprocess
 import sys
-
-# 设置标准输出的编码
-if sys.stdout.encoding != 'utf-8':
-    try:
-        sys.stdout.reconfigure(encoding='utf-8')
-    except:
-        pass  # 如果reconfigure不可用，忽略错误
+import ast
 
 def safe_print(message):
-    """安全打印函数，处理编码问题"""
+    """安全打印函数"""
+    print(message)
+
+def compare_results(actual, expected):
+    """比较两个结果是否相同"""
     try:
-        print(message)
-    except UnicodeEncodeError:
-        # 替换 Unicode 字符
-        safe_message = message.replace('❌', '[X]').replace('✅', '[V]')
-        print(safe_message)
+        # 解析实际输出和期望输出
+        actual_list = ast.literal_eval(actual) if actual.strip() else []
+        expected_list = ast.literal_eval(expected) if expected.strip() else []
+        
+        # 对内部列表排序以便比较
+        def normalize_result(result):
+            if not result:
+                return []
+            sorted_result = []
+            for item in result:
+                if isinstance(item, list):
+                    sorted_result.append(sorted(item))
+                else:
+                    sorted_result.append(item)
+            return sorted(sorted_result)
+        
+        actual_normalized = normalize_result(actual_list)
+        expected_normalized = normalize_result(expected_list)
+        
+        return actual_normalized == expected_normalized
+    except Exception as e:
+        safe_print(f"比较结果错误: {e}")
+        return False
+
+def run_test_case(executable, array_input, num_input):
+    """运行单个测试用例"""
+    try:
+        # 准备输入数据
+        input_data = f"{array_input}\n{num_input}\n"
+        
+        result = subprocess.run(
+            [executable],
+            input=input_data,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            encoding='utf-8'
+        )
+        
+        if result.returncode != 0:
+            return None, f"程序异常退出，返回码: {result.returncode}\n错误信息: {result.stderr}"
+        
+        return result.stdout.strip(), None
+    except subprocess.TimeoutExpired:
+        return None, "程序运行超时"
+    except Exception as e:
+        return None, f"运行错误: {e}"
 
 def main():
     # 从命令行参数获取路径
     if len(sys.argv) != 4:
-        safe_print("用法: python verify_test.py <executable> <input_file> <output_file>")
+        safe_print("用法: python test_processor.py <executable> <input_file> <output_file>")
         safe_print(f"当前参数: {sys.argv}")
         sys.exit(1)
     
@@ -55,11 +96,9 @@ def main():
     try:
         with open(input_file, 'r', encoding='utf-8') as f:
             input_lines = [line.strip() for line in f.readlines() if line.strip()]
-            safe_print(f"读取到 {len(input_lines)} 行输入")
         
         with open(output_file, 'r', encoding='utf-8') as f:
-            output_lines = [line.strip() for line in f.readlines() if line.strip()]
-            safe_print(f"读取到 {len(output_lines)} 行期望输出")
+            expected_outputs = [line.strip() for line in f.readlines() if line.strip()]
     except Exception as e:
         safe_print(f"读取文件错误: {e}")
         sys.exit(1)
@@ -68,119 +107,50 @@ def main():
     passed_count = 0
     total_cases = 0
     
-    safe_print("开始测试...")
+    safe_print("开始测试AI处理器亲和性调度...")
     safe_print("=" * 60)
     
+    # 处理测试用例 - 每两行输入对应一行输出
     i = 0
-    output_index = 0
+    test_cases = []
     
+    # 解析输入文件，每组测试用例包含两行
     while i < len(input_lines):
-        # 解析测试用例
-        # 第一行：N 和 E
-        if i >= len(input_lines):
+        if i + 1 < len(input_lines):
+            array_line = input_lines[i]
+            num_line = input_lines[i + 1]
+            expected_output = expected_outputs[len(test_cases)] if len(test_cases) < len(expected_outputs) else ""
+            test_cases.append((array_line, num_line, expected_output))
+            i += 2
+        else:
             break
-            
-        first_line = input_lines[i]
-        if not first_line:
-            i += 1
-            continue
-            
-        # 解析第一行的 N 和 E
-        try:
-            n_str, e_str = first_line.split()
-            N = int(n_str)
-            E = int(e_str)
-        except:
-            safe_print(f"错误: 无法解析第一行 '{first_line}'")
-            i += 1
-            continue
-        
-        safe_print(f"测试用例 {total_cases + 1}:")
-        safe_print(f"  N={N}, E={E}")
-        
-        # 准备输入数据
-        input_data = first_line + "\n"
-        
-        # 读取接下来的 E 行
-        engine_lines = []
-        for j in range(1, E + 1):
-            if i + j < len(input_lines):
-                engine_line = input_lines[i + j]
-                input_data += engine_line + "\n"
-                engine_lines.append(engine_line)
-                safe_print(f"  发动机 {j}: {engine_line}")
-            else:
-                safe_print(f"  错误: 缺少第 {j} 个发动机数据")
-                break
+    
+    # 运行所有测试用例
+    for idx, (array_input, num_input, expected_output) in enumerate(test_cases):
+        safe_print(f"测试用例 {idx + 1}:")
+        safe_print(f"  输入数组: {array_input}")
+        safe_print(f"  申请数量: {num_input}")
+        safe_print(f"  期望输出: {expected_output}")
         
         # 运行程序
-        try:
-            result = subprocess.run(
-                [executable],
-                input=input_data,
-                capture_output=True,
-                text=True,
-                timeout=5,
-                encoding='utf-8'
-            )
-            
-            if result.returncode != 0:
-                safe_print(f"  [X] 程序异常退出，返回码: {result.returncode}")
-                safe_print(f"     错误信息: {result.stderr}")
-                i += E + 1
-                output_index += 2
-                continue
-            
-            # 解析实际输出
-            actual_output_lines = [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
-            
-            # 获取期望输出
-            expected_output_lines = []
-            if output_index < len(output_lines):
-                expected_output_lines.append(output_lines[output_index])
-            if output_index + 1 < len(output_lines):
-                expected_output_lines.append(output_lines[output_index + 1])
-            
-            safe_print(f"  期望输出:")
-            for idx, line in enumerate(expected_output_lines):
-                safe_print(f"    第{idx+1}行: {line}")
-            
-            safe_print(f"  实际输出:")
-            for idx, line in enumerate(actual_output_lines):
-                safe_print(f"    第{idx+1}行: {line}")
-            
-            # 比较输出
-            is_passed = True
-            if len(actual_output_lines) != len(expected_output_lines):
-                safe_print(f"  [X] 失败: 输出行数不匹配 (期望{len(expected_output_lines)}行, 实际{len(actual_output_lines)}行)")
-                is_passed = False
-            else:
-                for idx, (actual, expected) in enumerate(zip(actual_output_lines, expected_output_lines)):
-                    if actual != expected:
-                        safe_print(f"  [X] 失败: 第{idx+1}行不匹配")
-                        safe_print(f"      期望: {expected}")
-                        safe_print(f"      实际: {actual}")
-                        is_passed = False
-                        break
-            
-            if is_passed:
-                safe_print(f"  [V] 通过")
-                passed_count += 1
-            else:
-                safe_print(f"  [X] 失败")
-            
-            output_index += 2
-            total_cases += 1
-            
-        except subprocess.TimeoutExpired:
-            safe_print(f"  [X] 程序运行超时")
-            total_cases += 1
-        except Exception as e:
-            safe_print(f"  [X] 运行错误: {e}")
-            total_cases += 1
+        actual_output, error = run_test_case(executable, array_input, num_input)
         
+        if error:
+            safe_print(f"  [X] 运行失败: {error}")
+            total_cases += 1
+            continue
+        
+        safe_print(f"  实际输出: {actual_output}")
+        
+        # 比较结果
+        if compare_results(actual_output, expected_output):
+            safe_print(f"  [V] 通过")
+            passed_count += 1
+        else:
+            safe_print(f"  [X] 失败: 输出不匹配")
+        
+        total_cases += 1
         safe_print("-" * 40)
-        i += E + 1  # 移动到下一个测试用例
     
     # 输出测试结果
     safe_print("=" * 60)
