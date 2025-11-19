@@ -26,7 +26,7 @@ int main(){
         int m = input[j].second;
         if(m>=128){
             int mant = m&0b1111;
-            int exp = m&0b01110000>>4;
+            int exp = (m&0b01110000)>>4;
             actual_m = (mant|0x10)<<(exp+3);
         }
         else{
