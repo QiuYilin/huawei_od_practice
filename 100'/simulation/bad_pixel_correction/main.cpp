@@ -3,6 +3,7 @@
 
 // 审题：diff = |中心元素-周围均值|
 // 均值四舍五入
+//REVIEW  应该用round 将浮点数四舍五入
 int average(int a, int b) {
   if (a % b < (double)b*0.5) {
     return std::floor((double)a / b);
