@@ -14,6 +14,9 @@ Makefile
 *.cmake
 !CMakeLists.txt
 
+#mac
+.DS_Store
+
 # CMake 预设文件
 CMakePresets.json
 CMakeUserPresets.json
