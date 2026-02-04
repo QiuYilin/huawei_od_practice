@@ -6,7 +6,8 @@
 void getNextSmaller(std::vector<int> input,std::vector<int> &next_smaller){
   std::stack<int> stack;
   for(int i=0;i<input.size();i++){
-    while(!stack.empty()&&input[i]>input[stack.top()]){
+    //while(!stack.empty()&&input[i]>input[stack.top()]){
+    while(!stack.empty()&&input[i]<input[stack.top()]){//保持栈头到栈底递减
         next_smaller[stack.top()]=i;
         stack.pop();
     }
@@ -17,7 +18,8 @@ void getNextSmaller(std::vector<int> input,std::vector<int> &next_smaller){
 void getPrevSmaller(std::vector<int> input,std::vector<int> &prev_smaller){
   std::stack<int> stack;
   for(int i=input.size()-1;i>=0;i--){
-    while(!stack.empty()&&input[i]>input[stack.top()]){
+    //while(!stack.empty()&&input[i]>input[stack.top()]){
+    while(!stack.empty()&&input[i]<input[stack.top()]){
         prev_smaller[stack.top()]=i;
         stack.pop();
     }
