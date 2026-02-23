@@ -17,7 +17,7 @@ int main() {
   start_coors.push_back({input_v[2], input_v[3]});
   start_coors.push_back({input_v[4], input_v[5]});
   std::vector<std::vector<int>> grid(n, std::vector<int>(m, 0));
-  int time = 0;
+  int time = -1;
   std::queue<std::pair<int, int>> queue;
   for (int i = 0; i < start_coors.size(); i++) {
     queue.push(start_coors[i]);
@@ -42,7 +42,7 @@ int main() {
     }
   }
 
-  std::cout << time << std::endl;
+  std::cout << time<< std::endl;
           
   return 0;
 }
