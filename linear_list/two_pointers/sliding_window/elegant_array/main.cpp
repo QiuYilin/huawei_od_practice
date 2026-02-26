@@ -32,7 +32,7 @@ int main() {
     map<int, int> numCountMp;
     int left = 0;
     long ans = 0;
-    // 当前窗口中恰好达到k次不同元素的数量
+    //REVIEW 用满足>=k的元素种类来判断
     int valid = 0;
 
     for (int  right = 0; right < n; right++) {
