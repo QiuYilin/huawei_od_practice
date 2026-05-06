@@ -44,7 +44,7 @@ int main() {
     
     // 枚举天数
     for (int i = 1; i <= maxDay; i++) {
-        // 当前天不是游玩天,不需要消费,消费金额等于前i-天
+        // REVIEW :当前天不是游玩天,不需要消费,消费金额等于前i- 1天
         if (i != days[index]) {
             dp[i] = dp[i-1];
             continue;

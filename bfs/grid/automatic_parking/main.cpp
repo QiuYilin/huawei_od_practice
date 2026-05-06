@@ -19,7 +19,7 @@ int main() {
   queue.push({0, 0});
   visited[0][0] = true;
   int count = 0;
-  std::vector<std::vector<int>> dir{{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+  std::vector<std::vector<int>> dir{{0, 1}, {0, -1}, {-1, 0}, {1, 0}};//REVIEW 审题 横向加纵向是四个方向
   // 什么时候需要count辅助计数
   while (!queue.empty()) {
     int size = queue.size();

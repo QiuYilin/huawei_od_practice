@@ -15,13 +15,13 @@ int main(){
     std::cout << -1 << std::endl;
      return 0;
   }
-  std::vector<int> dp(sum/2+1,n);
+  std::vector<int> dp(sum/2+1,n);//REVIEW 最小数量得用最大数量初始化
   dp[0]=0;
   for(int i=0;i<n;i++){
     for(int j=sum/2;j>=w[i];j--){
       dp[j]=std::min(dp[j],dp[j-w[i]]+1);
     }
   }
-  std::cout << (dp[sum/2]==n? -1:dp[sum/2]) << std::endl;
+  std::cout << (dp[sum/2]==n? -1:dp[sum/2]) << std::endl;//注意和最大数量比较
   return 0;
 }

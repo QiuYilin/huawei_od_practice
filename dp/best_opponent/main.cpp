@@ -107,6 +107,7 @@ int main() {
     // 排序是关键
     sort(nums.begin(), nums.end());
     
+    //REVIEW 两个维度 前i个队伍 匹配j对
     // dp[i][j] 表示前i个队伍中，恰好匹配j对时的最小总差距
     // i从0到n，j从0到n/2
     int maxPairs = n / 2;
