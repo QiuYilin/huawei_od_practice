@@ -2,6 +2,8 @@
 #include <map>
 // 找最小 窗口度量：窗口内特定元素数目满足要求
 
+// REVIEW 审题 要求是各个方向都相同 不止是能回到原地
+
 bool shouldShrink(std::map<char,int> src_map,std::map<char,int> target_map){
     for(auto c:target_map){
       auto dir = c.first;
@@ -15,9 +17,8 @@ bool shouldShrink(std::map<char,int> src_map,std::map<char,int> target_map){
 int main() {
   std::string input;
   std::cin >> input;
-  // 求出要求先
   std::map<char, int> input_map;
-  if (input.size() % 4 != 0) {  // 疑问 不满足要求输出什么
+  if (input.size() % 4 != 0) {
     std::cout << "-1" << std::endl;
     return 0;
   }
