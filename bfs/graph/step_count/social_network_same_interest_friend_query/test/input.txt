@@ -1,0 +1,9 @@
+0,music,sports 1,music,reading 2,music 3,play,music,sports
+0,1 1,2 2,3 0,3
+0
+2
+
+0,music 1,music 2,music 3，music 4,music
+0,1 1,2 2,3 3,4
+0
+1

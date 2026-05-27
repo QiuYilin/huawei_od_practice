@@ -80,12 +80,12 @@ int main() {
         cin >> dielineTime >> score;
         ans[i] = {dielineTime, score};
     }
-    // 按照结束时间排序
+    //REVIEW 按照结束时间排序 越早结束的越优先
     sort(ans.begin(), ans.end());
 
     int res = 0;
-    int currentTime = 0;//REVIEW 用于处理同一天的情况
-    //REVIEW 做一个大小上限是t的优先级队列 小顶堆
+    int currentTime = 0;//REVIEW 用于处理同一天的情况 表示当前处理的任务数
+    //REVIEW 做一个大小上限是t的优先级队列 小顶堆 处理前k大子问题
     priority_queue<int, vector<int>, greater<int>> minHeap;
     for (int i = 0; i < ans.size(); i++) {
         pair<int, int> ele = ans[i];
@@ -93,9 +93,10 @@ int main() {
         int score = ele.second;
         // 当前时间小于结束时间时，可以直接进行判断
         if (endTime > currentTime) {
-            //REVIEW 如果当前已选择的任务数量还没有达到可用时间总数，就直接把这个新任务加入选择
+            //REVIEW 如果截止时间比当前时间晚 且 任务没满 直接添加
             if (minHeap.size() < t) {
                 minHeap.push(ele.second);
+                currentTime++;  
             } else {
                 // 替换之前获得积分少的工作
                 int minValue = minHeap.top();
@@ -104,8 +105,7 @@ int main() {
                     minHeap.push(ele.second);
                 }
             }
-            currentTime++;  
-        } else {//REVIEW 如果是同一天的 必须和之前的比较
+        } else {//REVIEW 如果截止时间和当前时间相同 替换
             if (minHeap.empty()) {
                 continue;
             }
